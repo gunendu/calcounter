@@ -1,16 +1,28 @@
 <form>
     <div class="form-group">
-        <label for="firstname">First Name</label>
-        <input type="text" class="form-control" id="firstname" placeholder="First Name" ng-model="inputForm.firstname">
+        <label for="itemname">Item Name</label>
+        <input type="text" class="form-control" id="itemname" placeholder="Item Name" ng-model="inputForm.itemname">
     </div>
     <div class="form-group">
-        <label for="lastname">Last Name</label>
-        <input type="text" class="form-control" id="lastname" placeholder="Last Name" ng-model="inputForm.lastname">
+        <label for="protein">Protein</label>
+        <input type="number" class="form-control" id="proteinvalue" placeholder="Protein" ng-model="inputForm.protein">
     </div>
     <div class="form-group">
-        <label for="email">Email</label>
-        <input type="email" class="form-control" id="email" placeholder="Email" ng-model="inputForm.email">
+        <label for="fat">Fat</label>
+        <input type="number" class="form-control" id="fatvalue" placeholder="Fat" ng-model="inputForm.fat">
     </div>
+    <div class="form-group">
+        <label for="carbs">Carbs</label>
+        <input type="number" class="form-control" id="carbsvalue" placeholder="Carbs" ng-model="inputForm.carbs">
+    </div>
+    <div class="form-group">
+        <label for="energy">Energy</label>
+        <input type="number" class="form-control" id="energyvalue" placeholder="Energy" ng-model="inputForm.energy">
+    </div>
+    <div class="form-group">
+        <label for="sodium">Sodium</label>
+        <input type="number" class="form-control" id="sodiumvalue" placeholder="Sodium" ng-model="inputForm.sodium">
+    </div>    
     <button type="button" class="btn btn-danger" ui-sref="list">Cancel</button>
-    <button type="button" class="btn btn-success" ng-click="save(inputForm.firstname, inputForm.lastname, inputForm.email)">Save</button>
+    <button type="button" class="btn btn-success" ng-click="save()">Save</button>
 </form>

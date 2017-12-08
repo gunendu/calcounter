@@ -1,7 +1,7 @@
 angular.module("pouchapp", ["ui.router"])
 
 .run(function($pouchDB) {
-    $pouchDB.setDatabase("nraboy-test");
+    $pouchDB.setDatabase("nutrition");
     $pouchDB.sync("http://localhost:4984/test-database");
 })
 
@@ -16,6 +16,11 @@ angular.module("pouchapp", ["ui.router"])
             "url": "/item/:documentId/:documentRevision",
             "templateUrl": "templates/item.html",
             "controller": "MainController"
+        })
+        .state("add", {
+            "url": "/item",
+            "templateUrl": "templates/add.html",
+            "controller": "AddController"
         });
     $urlRouterProvider.otherwise("list");
 })
@@ -23,7 +28,7 @@ angular.module("pouchapp", ["ui.router"])
 .controller("MainController", function($scope, $rootScope, $state, $stateParams, $pouchDB) {
 
     $scope.items = {};
-
+    
     $pouchDB.startListening();
 
     // Listen for changes which include create or update events
@@ -46,11 +51,14 @@ angular.module("pouchapp", ["ui.router"])
     }
 
     // Save a document with either an update or insert
-    $scope.save = function(firstname, lastname, email) {
+    $scope.save = function() {
         var jsonDocument = {
-            "firstname": firstname,
-            "lastname": lastname,
-            "email": email
+            "itemname": $scope.inputForm.itemname,
+            "protein": $scope.inputForm.protein,
+            "fat": $scope.inputForm.fat,
+            "carbs": $scope.inputForm.carbs,
+            "energy": $scope.inputForm.energy,
+            "sodium": $scope.inputForm.sodium          
         };
         // If we're updating, provide the most recent revision and document id
         if($stateParams.documentId) {
@@ -60,7 +68,7 @@ angular.module("pouchapp", ["ui.router"])
         $pouchDB.save(jsonDocument).then(function(response) {
             $state.go("list");
         }, function(error) {
-            console.log("ERROR -> " + error);
+            console.log("ERROR Saving data---> " + error);
         });
     }
 
@@ -70,13 +78,24 @@ angular.module("pouchapp", ["ui.router"])
 
 })
 
+.controller("AddController", function($scope, $rootScope, $state, $stateParams, $pouchDB) {
+
+    $scope.search = function(){
+        var query = $scope.query;
+        console.log("this is called",query);
+        $pouchDB.find(query);      
+    }
+
+})
+
 .service("$pouchDB", ["$rootScope", "$q", function($rootScope, $q) {
 
     var database;
     var changeListener;
+    var db;
 
     this.setDatabase = function(databaseName) {
-        database = new PouchDB(databaseName);
+        database = new PouchDB(databaseName);        
     }
 
     this.startListening = function() {
@@ -117,7 +136,7 @@ angular.module("pouchapp", ["ui.router"])
         }
         return deferred.promise;
     }
-
+    
     this.delete = function(documentId, documentRevision) {
         return database.remove(documentId, documentRevision);
     }
@@ -128,6 +147,18 @@ angular.module("pouchapp", ["ui.router"])
 
     this.destroy = function() {
         database.destroy();
+    }
+
+    this.find = function(query) {
+        database.createIndex({
+            index : {fields: ['itemname']}
+        }).then(function(){
+            return database.find({
+                selector: {"itemname": query}
+            });
+        }).then(function(result){
+            console.log("result is********",result);
+        })
     }
 
 }]);
