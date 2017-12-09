@@ -1,4 +1,4 @@
-<input type="text" class="form-control" id="query" placeholder="Item Name" ng-model="query">
+<input type="text" class="form-control" id="query" placeholder="Item Name" ng-model="query" ng-change="change()">
 <button type="button" class="btn btn-success" ng-click="search()">Search</button>
 
 <table class="table table-striped">
@@ -15,7 +15,7 @@
         </tr>
     </thead>
     <tbody>
-        <tr ng-repeat="(key, value) in filter_items">
+        <tr ng-repeat="value in filter_items | unique: 'itemname' ">
             <td><input type="number" ng-model="quantity"></td>
             <td><input type="number" ng-model="serving_size"></td>
             <td>{{value.itemname}}</td>
@@ -24,7 +24,7 @@
             <td>{{value.carbs}}</td>
             <td>{{value.energy}}</td>
             <td>{{value.sodium}}</td>
-            <td><a href="" ng-click="addToList(value._id,quantity)">Add</a></td>
+            <td><a href="" ng-click="addToList(value._id,quantity,serving_size)">Add</a></td>
         </tr>
     </tbody>
 </table>

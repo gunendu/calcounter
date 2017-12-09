@@ -1,4 +1,4 @@
-angular.module("pouchapp", ["ui.router"])
+angular.module("pouchapp", ["ui.router","angular.filter"])
 
 .run(function($pouchDB) {
     $pouchDB.setDatabase("nutrition");
@@ -84,7 +84,52 @@ angular.module("pouchapp", ["ui.router"])
     $scope.filter_items = [];
     $scope.quantity = 1;
     $scope.serving_size = 100;
-    $scope.search = function(){
+    $scope.response = [];
+        
+    $scope.list = [];
+    $scope.proTotal = 0;
+    $scope.fatTotal = 0;
+    $scope.carbsTotal = 0;
+    $scope.energyTotal = 0;
+    $scope.sodiumTotal = 0;
+    $scope.addToList = function(_id,quantity,serving_size){
+        var item = _.find($scope.filter_items,function(item){
+            return item._id == _id;
+        })
+        item["quantity"] = quantity;
+        item["serving_size"] = serving_size;
+        $scope.list.push(item);
+        $scope.calculateTotal(item)
+    }
+
+    $scope.removeFromList = function(_id){
+        $scope.list = _.reject($scope.list,function(item){
+             if(item._id == _id){
+                $scope.removeFromTotal(item);
+                return true;
+             }
+        })
+    }
+
+    $scope.removeFromTotal = function(item){
+        var serving_size = item["serving_size"]/100;
+        $scope.proTotal = $scope.proTotal - ((item.protein * serving_size) * item.quantity);
+        $scope.fatTotal = $scope.fatTotal - ((item.fat * serving_size) * item.quantity);
+        $scope.carbsTotal = $scope.carbsTotal - ((item.carbs * serving_size) *  item.quantity);
+        $scope.energyTotal = $scope.energyTotal - ((item.energy * serving_size) * item.quantity);
+        $scope.sodiumTotal = $scope.sodiumTotal - ((item.sodium * serving_size) * item.quantity);
+    }
+
+    $scope.calculateTotal = function(item){
+        var serving_size = item["serving_size"]/100;
+        $scope.proTotal = $scope.proTotal + ((item.protein * serving_size) * item.quantity);
+        $scope.fatTotal = $scope.fatTotal + ((item.fat * serving_size) * item.quantity);
+        $scope.carbsTotal = $scope.carbsTotal + ((item.carbs * serving_size) *  item.quantity);
+        $scope.energyTotal = $scope.energyTotal + ((item.energy * serving_size) * item.quantity);
+        $scope.sodiumTotal = $scope.sodiumTotal + ((item.sodium * serving_size) * item.quantity);
+    }
+
+    $scope.change = function(){
         var query = $scope.query;
         $pouchDB.find(query).then(function(result){
             if(result.length>0){
@@ -93,39 +138,7 @@ angular.module("pouchapp", ["ui.router"])
             }
         })
     }
-
-    $scope.list = [];
-    $scope.proTotal = 0;
-    $scope.fatTotal = 0;
-    $scope.carbsTotal = 0;
-    $scope.energyTotal = 0;
-    $scope.sodiumTotal = 0;
-    $scope.addToList = function(_id,quantity){
-        var item = _.find($scope.filter_items,function(item){
-            return item._id == _id;
-        })
-        item["quantity"] = quantity;
-        $scope.list.push(item);
-        $scope.proTotal = $scope.proTotal + ((item.protein) * item.quantity);
-        $scope.fatTotal = $scope.fatTotal + ((item.fat) * item.quantity);
-        $scope.carbsTotal = $scope.carbsTotal + ((item.carbs) *  item.quantity);
-        $scope.energyTotal = $scope.energyTotal + ((item.energy) * item.quantity);
-        $scope.sodiumTotal = $scope.sodiumTotal + ((item.sodium) * item.quantity);
-    }
-
-    $scope.removeFromList = function(_id){
-        $scope.list = _.reject($scope.list,function(item){
-             if(item._id == _id){
-                $scope.proTotal = $scope.proTotal - ((item.protein) * item.quantity);
-                $scope.fatTotal = $scope.fatTotal - ((item.fat) * item.quantity);
-                $scope.carbsTotal = $scope.carbsTotal - ((item.carbs) *  item.quantity);
-                $scope.energyTotal = $scope.energyTotal - ((item.energy) * item.quantity);
-                $scope.sodiumTotal = $scope.sodiumTotal - ((item.sodium) * item.quantity); 
-                return true;
-             }
-        })
-    }
-    console.log("Final list",$scope.list);
+    console.log("Final list",$scope.list);    
 })
 
 .service("$pouchDB", ["$rootScope", "$q", function($rootScope, $q) {
@@ -194,11 +207,11 @@ angular.module("pouchapp", ["ui.router"])
             index : {fields: ['itemname']}
         }).then(function(){
             return database.find({
-                selector: {"itemname": query}
+                selector: {"itemname": {$regex:  ".*"+query+".*" }}
             });
         }).then(function(result){
             console.log("result is********",result.docs);
-            return result.docs;            
+            return result.docs;   
         })
     }
 
