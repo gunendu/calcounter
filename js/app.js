@@ -34,6 +34,7 @@ angular.module("pouchapp", ["ui.router"])
     // Listen for changes which include create or update events
     $rootScope.$on("$pouchDB:change", function(event, data) {
         $scope.items[data.doc._id] = data.doc;
+        console.log("init list",$scope.items);
         $scope.$apply();
     });
 
@@ -82,11 +83,12 @@ angular.module("pouchapp", ["ui.router"])
 
     $scope.filter_items = [];
     $scope.quantity = 1;
+    $scope.serving_size = 100;
     $scope.search = function(){
         var query = $scope.query;
         $pouchDB.find(query).then(function(result){
             if(result.length>0){
-                $scope.filter_items.push(result[0]);            
+                $scope.filter_items.push(result[0]);        
                 $scope.$apply();
             }
         })

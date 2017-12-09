@@ -5,6 +5,7 @@
     <thead>
         <tr>
             <th>Quantity</th>
+            <th>Serving Size</th>
             <th>Item Name</th>
             <th>Protein</th>
             <th>Fat</th>
@@ -16,6 +17,7 @@
     <tbody>
         <tr ng-repeat="(key, value) in filter_items">
             <td><input type="number" ng-model="quantity"></td>
+            <td><input type="number" ng-model="serving_size"></td>
             <td>{{value.itemname}}</td>
             <td>{{value.protein}}</td>
             <td>{{value.fat}}</td>
