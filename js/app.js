@@ -18,7 +18,7 @@ angular.module("pouchapp", ["ui.router"])
             "controller": "MainController"
         })
         .state("add", {
-            "url": "/item",
+            "url": "/add",
             "templateUrl": "templates/add.html",
             "controller": "AddController"
         });
@@ -80,12 +80,38 @@ angular.module("pouchapp", ["ui.router"])
 
 .controller("AddController", function($scope, $rootScope, $state, $stateParams, $pouchDB) {
 
+    $scope.filter_items = [];
+    $scope.quantity = 1;
     $scope.search = function(){
         var query = $scope.query;
-        console.log("this is called",query);
-        $pouchDB.find(query);      
+        $pouchDB.find(query).then(function(result){
+            if(result.length>0){
+                $scope.filter_items.push(result[0]);            
+                $scope.$apply();
+            }
+        })
     }
 
+    $scope.list = [];
+    $scope.subtotal = 0;
+    $scope.addToList = function(_id,quantity){
+        var item = _.find($scope.filter_items,function(item){
+            return item._id == _id;
+        })
+        item["quantity"] = quantity;
+        $scope.list.push(item);
+        $scope.subtotal = $scope.subtotal + ((item.protein + item.fat + item.carbs + item.energy + item.sodium) * item.quantity);
+    }
+
+    $scope.removeFromList = function(_id){
+        $scope.list = _.reject($scope.list,function(item){
+             if(item._id == _id){
+                 $scope.subtotal = $scope.subtotal - ((item.protein + item.fat + item.carbs + item.energy + item.sodium) * item.quantity);
+                 return true;
+             }
+        })
+    }
+    console.log("Final list",$scope.list);
 })
 
 .service("$pouchDB", ["$rootScope", "$q", function($rootScope, $q) {
@@ -150,14 +176,15 @@ angular.module("pouchapp", ["ui.router"])
     }
 
     this.find = function(query) {
-        database.createIndex({
+        return database.createIndex({
             index : {fields: ['itemname']}
         }).then(function(){
             return database.find({
                 selector: {"itemname": query}
             });
         }).then(function(result){
-            console.log("result is********",result);
+            console.log("result is********",result.docs);
+            return result.docs;            
         })
     }
 

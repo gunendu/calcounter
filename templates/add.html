@@ -1,2 +1,60 @@
 <input type="text" class="form-control" id="query" placeholder="Item Name" ng-model="query">
-<button type="button" class="btn btn-success" ng-click="search()">Save</button>
+<button type="button" class="btn btn-success" ng-click="search()">Search</button>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Quantity</th>
+            <th>Item Name</th>
+            <th>Protein</th>
+            <th>Fat</th>
+            <th>Carbs</th>
+            <th>Energy</th>
+            <th>Sodium</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="(key, value) in filter_items">
+            <td><input type="number" ng-model="quantity"></td>
+            <td>{{value.itemname}}</td>
+            <td>{{value.protein}}</td>
+            <td>{{value.fat}}</td>
+            <td>{{value.carbs}}</td>
+            <td>{{value.energy}}</td>
+            <td>{{value.sodium}}</td>
+            <td><a href="" ng-click="addToList(value._id,quantity)">Add</a></td>
+        </tr>
+    </tbody>
+</table>
+
+<table class="table table-striped" ng-if="list.length>0">
+        <thead>
+            <tr>
+                <th>Quantity</th>                    
+                <th>Item Name</th>
+                <th>Protein</th>
+                <th>Fat</th>
+                <th>Carbs</th>
+                <th>Energy</th>
+                <th>Sodium</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="(key, value) in list">
+                <td>{{value.quantity}}</td>
+                <td>{{value.itemname}}</td>
+                <td>{{value.protein}}</td>
+                <td>{{value.fat}}</td>
+                <td>{{value.carbs}}</td>
+                <td>{{value.energy}}</td>
+                <td>{{value.sodium}}</td>
+                <td><a href="" ng-click="removeFromList(value._id)">Remove</a></td>
+            </tr>
+            <tr>
+                <td>Subtotal</td>
+                <td>{{subtotal}}</td>
+            </tr>
+        </tbody>
+</table>
+    
+
