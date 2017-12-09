@@ -93,21 +93,33 @@ angular.module("pouchapp", ["ui.router"])
     }
 
     $scope.list = [];
-    $scope.subtotal = 0;
+    $scope.proTotal = 0;
+    $scope.fatTotal = 0;
+    $scope.carbsTotal = 0;
+    $scope.energyTotal = 0;
+    $scope.sodiumTotal = 0;
     $scope.addToList = function(_id,quantity){
         var item = _.find($scope.filter_items,function(item){
             return item._id == _id;
         })
         item["quantity"] = quantity;
         $scope.list.push(item);
-        $scope.subtotal = $scope.subtotal + ((item.protein + item.fat + item.carbs + item.energy + item.sodium) * item.quantity);
+        $scope.proTotal = $scope.proTotal + ((item.protein) * item.quantity);
+        $scope.fatTotal = $scope.fatTotal + ((item.fat) * item.quantity);
+        $scope.carbsTotal = $scope.carbsTotal + ((item.carbs) *  item.quantity);
+        $scope.energyTotal = $scope.energyTotal + ((item.energy) * item.quantity);
+        $scope.sodiumTotal = $scope.sodiumTotal + ((item.sodium) * item.quantity);
     }
 
     $scope.removeFromList = function(_id){
         $scope.list = _.reject($scope.list,function(item){
              if(item._id == _id){
-                 $scope.subtotal = $scope.subtotal - ((item.protein + item.fat + item.carbs + item.energy + item.sodium) * item.quantity);
-                 return true;
+                $scope.proTotal = $scope.proTotal - ((item.protein) * item.quantity);
+                $scope.fatTotal = $scope.fatTotal - ((item.fat) * item.quantity);
+                $scope.carbsTotal = $scope.carbsTotal - ((item.carbs) *  item.quantity);
+                $scope.energyTotal = $scope.energyTotal - ((item.energy) * item.quantity);
+                $scope.sodiumTotal = $scope.sodiumTotal - ((item.sodium) * item.quantity); 
+                return true;
              }
         })
     }
@@ -121,7 +133,7 @@ angular.module("pouchapp", ["ui.router"])
     var db;
 
     this.setDatabase = function(databaseName) {
-        database = new PouchDB(databaseName);        
+        database = new PouchDB(databaseName);
     }
 
     this.startListening = function() {
