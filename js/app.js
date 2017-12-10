@@ -2,7 +2,7 @@ angular.module("pouchapp", ["ui.router","angular.filter"])
 
 .run(function($pouchDB) {
     $pouchDB.setDatabase("nutrition");
-    $pouchDB.sync("http://localhost:4984/test-database");
+    $pouchDB.sync("http://localhost:5984/nutrition");
 })
 
 .config(function($stateProvider, $urlRouterProvider) {
