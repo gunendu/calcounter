@@ -1,25 +1,28 @@
 angular.module("pouchapp", ["ui.router","angular.filter"])
 
 .run(function($pouchDB) {
+    console.log("this is called");    
     $pouchDB.setDatabase("nutrition");
     $pouchDB.sync("http://localhost:5984/nutrition");
 })
 
 .config(function($stateProvider, $urlRouterProvider) {
+    console.log("this is called22");
+    
     $stateProvider
         .state("list", {
             "url": "/list",
-            "templateUrl": "templates/list.html",
+            "templateUrl": "../templates/list.html",
             "controller": "MainController"
         })
         .state("item", {
             "url": "/item/:documentId/:documentRevision",
-            "templateUrl": "templates/item.html",
+            "templateUrl": "../templates/item.html",
             "controller": "MainController"
         })
         .state("add", {
             "url": "/add",
-            "templateUrl": "templates/add.html",
+            "templateUrl": "../templates/add.html",
             "controller": "AddController"
         });
     $urlRouterProvider.otherwise("list");
@@ -27,6 +30,7 @@ angular.module("pouchapp", ["ui.router","angular.filter"])
 
 .controller("MainController", function($scope, $rootScope, $state, $stateParams, $pouchDB) {
 
+    console.log("inside main");
     $scope.items = {};
     
     $pouchDB.startListening();
